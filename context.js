@@ -55,7 +55,16 @@ Namespace.prototype.run = function (fn) {
     throw exception;
   }
   finally {
-    this.exit(context);
+    if (context && context.res) {
+      var self = this;
+      context.res.on('finish', function () {
+        // response was sent. kill the context
+        self.exit(context);
+      });
+    } else {
+      // default action
+      this.exit(context);
+    }
   }
 };
 
